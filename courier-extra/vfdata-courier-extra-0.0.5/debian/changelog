@@ -1,3 +1,9 @@
+vfdata-courier-extra (0.0.5-0+0hisashim1) unstable; urgency=low
+
+  * Rename font from pcr to pcre (pcr with extra weight) to avoid confusion.
+
+ -- Hisashi Morita <hisashim@workbook.org>  Thu, 05 May 2011 21:19:01 +0900
+
 vfdata-courier-extra (0.0.4-0+0hisashim1) unstable; urgency=low
 
   * Fix character mapping problem (quote and backquote).
