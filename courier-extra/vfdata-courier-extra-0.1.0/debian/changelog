@@ -1,8 +1,8 @@
-vfdata-courier-extra (0.0.5-0+0hisashim1) unstable; urgency=low
+vfdata-courier-extra (0.1.0-0+0hisashim1) unstable; urgency=low
 
   * Rename font from pcr to pcre (pcr with extra weight) to avoid confusion.
 
- -- Hisashi Morita <hisashim@workbook.org>  Thu, 05 May 2011 21:19:01 +0900
+ -- Hisashi Morita <hisashim@workbook.org>  Mon, 16 May 2011 20:07:09 +0900
 
 vfdata-courier-extra (0.0.4-0+0hisashim1) unstable; urgency=low
 
