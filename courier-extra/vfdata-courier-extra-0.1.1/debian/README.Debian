@@ -2,24 +2,21 @@ vfdata-courier-extra for Debian
 -------------------------------
 
 This is a Debianized version of courier-extra, a set of virtual font files
-to use Courier extra weights and variants in LaTeX.
+to use Courier with extra series and shapes in LaTeX.
 
 Features
 --------
 
-  * More weights and variants of squashed Courier, e.g. pcr(r|b)[co]8tn
-  * fcr: pcr with ucr-like opening quote symbols
+  * New font "fcr": pcr with ucr-like easy-to-distinguish opening quote
+    symbols (`).
 
-  * Four DVIPDFMx maps are included:
-    - courier-extra.map: same as courier-extra-ucr.map
-    - courier-extra-ucr.map: maps pcr to ucr (URW Courier)
-    - courier-extra-pcr.map: maps pcr to pcr (Adobe Courier)
-    - courier-extra-fcr.map: maps pcr to fcr (Modified Courier)
+  * New LaTeX font definition "pcre": pcr with extra series and shapes,
+    e.g. pcr(r|b)[co]8tn.
+    - extra series: condensed (narrow) (85%)
+    - extra shapes: slant (oblique) and small caps
 
 Installation
 ------------
-
-Install the package, if you haven't yet.
 
   $ sudo dpkg -i vfdata-courier-extra*.deb
 
@@ -45,20 +42,31 @@ Usage
 
   $ $EDITOR foo.tex
     \documentclass{article}
-    \usepackage{courier-extra}
+    \usepackage{courier-extra}% \\ttdefault is set to pcre
     \begin{document}
-    \fontfamily{pcr}\selectfont Courier          \\
+    \ttfamily                   Courier extra    \\
     \mdseries                   medium           \\
     \fontseries{mc}\selectfont  medium condensed \\
     \bfseries                   bold             \\
     \fontseries{bc}\selectfont  bold condensed   \\
-    \upshape\selectfont normal    \\
-    \itshape\selectfont italic    \\
-    \slshape\selectfont slant     \\
-    \scshape\selectfont smallcaps
+    \upshape\selectfont         normal           \\
+    \itshape\selectfont         italic           \\
+    \slshape\selectfont         slant            \\
+    \scshape\selectfont         smallcaps
     \end{document}
   $ latex foo.tex
   $ dvipdfmx -f courier-extra.map -o foo.pdf foo.dvi
+  $ dvipdfmx -f courier-extra-fcr.map -o foo-fcr.pdf foo.dvi
+
+Font Maps
+---------
+
+Four DVIPDFMx maps are included:
+
+  * courier-extra.map:     same as courier-extra-ucr.map
+  * courier-extra-ucr.map: maps pcr to ucr (URW Courier)
+  * courier-extra-pcr.map: maps pcr to pcr (Adobe Courier)
+  * courier-extra-fcr.map: maps pcr to fcr (Modified Courier)
 
 Notes
 -----
@@ -74,3 +82,17 @@ Font characteristics:
 
   * Modified Courier (fcr): Based on Adobe Courier, but with URW-like
     quoteleft (`) and quotedblleft (``).
+
+Known Problems:
+
+  * Print at least one character in medium series prior to other series
+    and shapes. Otherwise, extra series and shapes may not print
+    correctly. Possible workaround is like:
+
+      {\\ttfamily
+       \fontseries{m}\selectfont  medium
+       \fontseries{mc}\selectfont medium condensed
+       \fontseries{bc}\selectfont bold condensed}
+      ...
+
+    Any advise to fix it is highly appreciated.
