@@ -1,3 +1,9 @@
+vfdata-courier-extra (0.1.1-0+0hisashim1) unstable; urgency=low
+
+  * New upstream release. Update document.
+
+ -- Hisashi Morita <hisashim@workbook.org>  Mon, 18 May 2011 22:10:30 +0900
+
 vfdata-courier-extra (0.1.0-0+0hisashim1) unstable; urgency=low
 
   * Rename font from pcr to pcre (pcr with extra weight) to avoid confusion.
