@@ -71,7 +71,9 @@ DEBORIG	= $(PACKAGE)_$(VERSION).orig.tar.gz
 
 all:	fontinst fcrpfb
 
-.PHONY:	all fontinst test install clean cleanall search dist deb
+.PHONY:	all install fontinst fcrpfb test search \
+	dist deb pbuilder-build pbuilder-login pbuilder-test \
+	clean cleanall
 .SECONDARY:
 
 # installation
