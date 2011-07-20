@@ -4,6 +4,9 @@
 
 # metadata
 
+PRODUCT	= courier-extra
+VERSION	= $(shell cat VERSION)
+
 # programs
 
 TEX	= tex -interaction batchmode
