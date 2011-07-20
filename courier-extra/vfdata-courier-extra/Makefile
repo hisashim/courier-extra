@@ -20,6 +20,7 @@ else
   DVITOPDFFLAGS	= -f $(MAP)
   LABEL		= $(TESTNAME)-$(MAP)
 endif
+TAR_XVCS= tar --exclude=".svn" --exclude=".git" --exclude=".hg"
 
 # files and directories
 
@@ -46,11 +47,21 @@ TESTDOC	= nfssfont
 TESTPDFS= $(foreach f,$(FONTS),$(f)-$(LABEL).pdf)
 TESTNAME= bigtest
 
+DIST	= Makefile VERSION ChangeLog dev/ \
+	  courier-extra-driver.tex courier-extra-map.tex \
+	  courier-extra.sty courier-extra-test.tex \
+	  courier-extra.map courier-extra-fcr.map \
+	  courier-extra-pcr.map courier-extra-ucr.map \
+	  fcrbo8a.t1asm.patch fcrro8a.t1asm.patch \
+	  fcrb8a.t1asm.patch fcrr8a.t1asm.patch
+
+RELEASE	= $(PRODUCT)-$(VERSION)
+
 ## targets
 
 all:	fontinst fcrpfb
 
-.PHONY:	all fontinst test install clean cleanall search
+.PHONY:	all fontinst test install clean cleanall search dist
 .SECONDARY:
 
 # installation
@@ -177,15 +188,32 @@ search:
 	echo -n "$${f}.tfm:	" ; kpsewhich $${f}.tfm ; \
 	done
 
+# source package
+
+dist:	$(RELEASE).tar.gz
+
+$(RELEASE):	$(DIST)
+	mkdir -p $@
+	($(TAR_XVCS) -cf - $(DIST)) | (cd $@ && tar xpf -)
+
+ChangeLog:
+	dev/changelog.sh > $@
+
+%.tar.gz:	%
+	tar cfz $@ $<
+
 # utilities
 
 clean:	
 	rm -f *.fd *.vpl *.mtx *.pl *.log *.aux *.dvi *.t1asm *.t1
 	rm -f *-$(TESTDOC).*
 	rm -f pcr*.pfb
+	rm -f ChangeLog
+	rm -fr $(RELEASE)
 
 cleanall: clean
 	rm -f *.afm *.vf *.tfm *.pdf *.pfb
 	rm -f courier-extra-dvipdfm.map
 	rm -f courier-extra-dvips.map
 	rm -f courier-extra-rec.tex
+	rm -f $(RELEASE).tar.gz
