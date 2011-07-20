@@ -6,6 +6,9 @@
 
 PRODUCT	= courier-extra
 VERSION	= $(shell cat VERSION)
+PACKAGE = vfdata-courier-extra
+DEBVERREV= $(shell head -n 1 debian/changelog \
+	           | cut -d' ' -f 2 | sed 's/(\(.*\))/\1/')
 
 # programs
 
@@ -21,6 +24,10 @@ else
   LABEL		= $(TESTNAME)-$(MAP)
 endif
 TAR_XVCS= tar --exclude=".svn" --exclude=".git" --exclude=".hg"
+DEBBUILDOPTS=
+PBUILDER = cowbuilder
+PBOPTS   = --hookdir=pbuilder-hooks \
+	   --bindmounts "/var/cache/pbuilder/result"
 
 # files and directories
 
@@ -57,11 +64,14 @@ DIST	= Makefile VERSION ChangeLog dev/ \
 
 RELEASE	= $(PRODUCT)-$(VERSION)
 
+DEB	= $(PACKAGE)_$(DEBVERREV)
+DEBORIG	= $(PACKAGE)_$(VERSION).orig.tar.gz
+
 ## targets
 
 all:	fontinst fcrpfb
 
-.PHONY:	all fontinst test install clean cleanall search dist
+.PHONY:	all fontinst test install clean cleanall search dist deb
 .SECONDARY:
 
 # installation
@@ -206,6 +216,29 @@ ChangeLog:
 %.tar.gz:	%
 	tar cfz $@ $<
 
+# debian package
+
+deb:	$(DEB)_all.deb
+
+$(DEB)_all.deb:	pbuilder-build
+	cp /var/cache/pbuilder/result/$@ ./
+
+pbuilder-build:	$(DEB).dsc
+	sudo $(PBUILDER) --build $< -- $(PBOPTS)
+
+pbuilder-login:
+	sudo $(PBUILDER) --login $(PBOPTS)
+
+pbuilder-test:	$(DEB)_all.deb
+	sudo cowbuilder --execute pbuilder-hooks/test.sh $< -- $(PBOPTS)
+
+$(DEB).dsc:	$(RELEASE) $(DEBORIG)
+	($(TAR_XVCS) -cf - debian) | (cd $(RELEASE) && tar xpf -)
+	(cd $(RELEASE) && debuild $(DEBBUILDOPTS); cd -)
+
+$(DEBORIG):	$(RELEASE).tar.gz
+	cp $< $@
+
 # utilities
 
 clean:	
@@ -214,6 +247,8 @@ clean:
 	rm -f pcr*.pfb
 	rm -f ChangeLog
 	rm -fr $(RELEASE)
+	rm -f $(DEB)_*.build $(DEB)_*.changes
+	rm -fr debian/$(PRODUCT)
 
 cleanall: clean
 	rm -f *.afm *.vf *.tfm *.pdf *.pfb
@@ -221,3 +256,4 @@ cleanall: clean
 	rm -f courier-extra-dvips.map
 	rm -f courier-extra-rec.tex
 	rm -f $(RELEASE).tar.gz
+	rm -f $(DEB).dsc $(DEBORIG) $(DEB).diff.gz $(DEB)_*.deb
