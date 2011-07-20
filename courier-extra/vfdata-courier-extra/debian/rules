@@ -48,7 +48,7 @@ clean:
 	#-$(MAKE) clean
 
 	dh_clean
-	-$(MAKE) cleanall
+	-$(MAKE) clean
 
 install: build
 	dh_testdir

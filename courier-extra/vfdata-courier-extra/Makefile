@@ -73,7 +73,7 @@ all:	fontinst fcrpfb
 
 .PHONY:	all install fontinst fcrpfb test search \
 	dist deb pbuilder-build pbuilder-login pbuilder-test \
-	clean cleanall
+	mostlyclean clean distclean
 .SECONDARY:
 
 # installation
@@ -244,19 +244,21 @@ $(DEBORIG):	$(RELEASE).tar.gz
 
 # utilities
 
-clean:	
+mostlyclean:	
 	rm -f *.fd *.vpl *.mtx *.pl *.log *.aux *.dvi *.t1asm *.t1
 	rm -f *-$(TESTDOC).*
 	rm -f pcr*.pfb
-	rm -f ChangeLog
 	rm -fr $(RELEASE)
 	rm -f $(DEB)_*.build $(DEB)_*.changes
 	rm -fr debian/$(PRODUCT)
 
-cleanall: clean
+clean: mostlyclean
 	rm -f *.afm *.vf *.tfm *.pdf *.pfb
 	rm -f courier-extra-dvipdfm.map
 	rm -f courier-extra-dvips.map
 	rm -f courier-extra-rec.tex
 	rm -f $(RELEASE).tar.gz
 	rm -f $(DEB).dsc $(DEBORIG) $(DEB).diff.gz $(DEB)_*.deb
+
+distclean: clean
+	rm -f ChangeLog
