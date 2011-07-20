@@ -9,6 +9,10 @@ VERSION	= $(shell cat VERSION)
 PACKAGE = vfdata-courier-extra
 DEBVERREV= $(shell head -n 1 debian/changelog \
 	           | cut -d' ' -f 2 | sed 's/(\(.*\))/\1/')
+SOFTWARE_VERSION=$(shell head -n 1 debian/changelog \
+                         | cut -d' ' -f 2 | sed 's/(\(.*\)-\(.*\))/\1/')
+PACKAGE_REVISION=$(shell head -n 1 debian/changelog \
+                         | cut -d' ' -f 2 | sed 's/(\(.*\)-\(.*\))/\2/')
 
 # programs
 
@@ -230,7 +234,8 @@ pbuilder-login:
 	sudo $(PBUILDER) --login $(PBOPTS)
 
 pbuilder-test:	$(DEB)_all.deb
-	sudo cowbuilder --execute pbuilder-hooks/test.sh $< -- $(PBOPTS)
+	sudo $(PBUILDER) --execute $(PBOPTS) -- pbuilder-hooks/test.sh \
+	$(PACKAGE) $(SOFTWARE_VERSION) $(PACKAGE_REVISION)
 
 $(DEB).dsc:	$(RELEASE) $(DEBORIG)
 	($(TAR_XVCS) -cf - debian) | (cd $(RELEASE) && tar xpf -)
