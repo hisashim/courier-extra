@@ -66,7 +66,7 @@ all:	fontinst fcrpfb
 
 # installation
 
-install:	
+install:	fontinst fcrpfb
 	mkdir -p $(DESTDIR)$(TEXMF_TL)/fonts/tfm/public/courier-extra \
 	         $(DESTDIR)$(TEXMF_TL)/fonts/vf/public/courier-extra \
 	         $(DESTDIR)$(TEXMF_TL)/fonts/type1/public/courier-extra \
@@ -78,7 +78,11 @@ install:
 	cp -r *.map $(DESTDIR)/etc/texmf/dvipdfm
 	cp -r *.fd  $(DESTDIR)$(TEXMF_TL)/tex/latex/courier-extra
 	cp -r *.sty $(DESTDIR)$(TEXMF_TL)/tex/latex/courier-extra
-	cd $(DESTDIR)$(TEXMF) ; \
+	mkdir -p $(DESTDIR)$(TEXMF)/fonts/tfm/public/courier-extra \
+	         $(DESTDIR)$(TEXMF)/fonts/vf/public/courier-extra \
+	         $(DESTDIR)$(TEXMF)/fonts/type1/public/courier-extra \
+	         $(DESTDIR)$(TEXMF)/tex/latex/courier-extra
+	(cd $(DESTDIR)$(TEXMF) && \
 	ln -s       $(TEXMF_TL)/fonts/tfm/public/courier-extra \
 	            fonts/tfm/public/courier-extra ; \
 	ln -s       $(TEXMF_TL)/fonts/vf/public/courier-extra \
@@ -86,7 +90,7 @@ install:
 	ln -s       $(TEXMF_TL)/fonts/type1/public/courier-extra \
 	            fonts/type1/public/courier-extra ; \
 	ln -s       $(TEXMF_TL)/tex/latex/courier-extra \
-	            tex/latex/courier-extra ;
+	            tex/latex/courier-extra ; cd -)
 
 # generation
 
