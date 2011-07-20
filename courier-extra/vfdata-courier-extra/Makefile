@@ -20,7 +20,7 @@ endif
 
 # files and directories
 
-DESTDIR	= /tmp/courier-extra
+DESTDIR	=
 TEXMF	= /usr/share/texmf
 TEXMF_TL= /usr/share/texmf-texlive
 
