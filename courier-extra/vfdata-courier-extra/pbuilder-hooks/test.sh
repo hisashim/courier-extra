@@ -2,9 +2,9 @@
 if [ -n "$1" ] && [ -n "$2" ] && [ -n "$3" ]
   then
   PACKAGE=$1
-  SOFTWARE_VERSION=$2
-  PACKAGE_REVISION=$3
-  DEBFILE_BASENAME=${PACKAGE}_${SOFTWARE_VERSION}-${PACKAGE_REVISION}
+  VERSION=$2
+  DEBREV=$3
+  DEB=${PACKAGE}_${VERSION}-${DEBREV}
   else
   exit 1
 fi
@@ -17,7 +17,7 @@ diff -u /etc/apt/sources.list.bak /etc/apt/sources.list
 apt-get update
 apt-get update
 echo "### Installing the package and requirements..."
-dpkg -i /var/cache/pbuilder/result/${DEBFILE_BASENAME}_all.deb
+dpkg -i /var/cache/pbuilder/result/${DEB}_all.deb
 apt-get install -f --yes
 echo "### dpkg -l | grep '^ii'"
 dpkg -l | grep '^ii'
@@ -40,13 +40,13 @@ fi
 update-texmf
 
 echo "### Copying source package..."
-cp -v /var/cache/pbuilder/result/${DEBFILE_BASENAME}.dsc ./
-cp -v /var/cache/pbuilder/result/${DEBFILE_BASENAME}.tar.gz ./
-cp -v /var/cache/pbuilder/result/${DEBFILE_BASENAME}_*.changes ./
+cp -v /var/cache/pbuilder/result/${DEB}.dsc ./
+cp -v /var/cache/pbuilder/result/${DEB}.tar.gz ./
+cp -v /var/cache/pbuilder/result/${DEB}_*.changes ./
 echo "### Extracting source package..."
-tar fxz ${DEBFILE_BASENAME}.tar.gz
+tar fxz ${DEB}.tar.gz
 echo "### Processing test documents..."
-cd ${PACKAGE}-${SOFTWARE_VERSION}
+cd ${PACKAGE}-${VERSION}
 apt-get install t1utils
 make test
 make clean
@@ -74,5 +74,5 @@ echo "### Cleaning up..."
 rm -v courier-extra-test.{tex,aux,log,dvi,pdf}
 echo "### Testing uninstallation..."
 dpkg --remove vfdata-courier-extra
-dpkg --install /var/cache/pbuilder/result/${DEBFILE_BASENAME}_all.deb
+dpkg --install /var/cache/pbuilder/result/${DEB}_all.deb
 dpkg --purge vfdata-courier-extra

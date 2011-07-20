@@ -7,12 +7,8 @@
 PRODUCT	= courier-extra
 VERSION	= $(shell cat VERSION)
 PACKAGE = vfdata-courier-extra
-DEBVERREV= $(shell head -n 1 debian/changelog \
-	           | cut -d' ' -f 2 | sed 's/(\(.*\))/\1/')
-SOFTWARE_VERSION=$(shell head -n 1 debian/changelog \
-                         | cut -d' ' -f 2 | sed 's/(\(.*\)-\(.*\))/\1/')
-PACKAGE_REVISION=$(shell head -n 1 debian/changelog \
-                         | cut -d' ' -f 2 | sed 's/(\(.*\)-\(.*\))/\2/')
+DEBREV	= $(shell head -n 1 debian/changelog \
+                  | cut -d' ' -f 2 | sed 's/(\(.*\)-\(.*\))/\2/')
 
 # programs
 
@@ -68,7 +64,7 @@ DIST	= Makefile VERSION ChangeLog dev/ \
 
 RELEASE	= $(PRODUCT)-$(VERSION)
 
-DEB	= $(PACKAGE)_$(DEBVERREV)
+DEB	= $(PACKAGE)_$(VERSION)-$(DEBREV)
 DEBORIG	= $(PACKAGE)_$(VERSION).orig.tar.gz
 
 ## targets
@@ -235,7 +231,7 @@ pbuilder-login:
 
 pbuilder-test:	$(DEB)_all.deb
 	sudo $(PBUILDER) --execute $(PBOPTS) -- pbuilder-hooks/test.sh \
-	$(PACKAGE) $(SOFTWARE_VERSION) $(PACKAGE_REVISION)
+	$(PACKAGE) $(VERSION) $(DEBREV)
 
 $(DEB).dsc:	$(RELEASE) $(DEBORIG)
 	($(TAR_XVCS) -cf - debian) | (cd $(RELEASE) && tar xpf -)
