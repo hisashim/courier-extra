@@ -34,6 +34,8 @@ PBOPTS   = --hookdir=pbuilder-hooks \
 DESTDIR =
 TEXMF   = /usr/share/texmf
 TEXMF_TL= /usr/share/texmf-texlive
+MAPDIRS = $(DESTDIR)/etc/texmf/dvipdfm \
+          $(DESTDIR)/etc/texmf/dvipdfmx
 
 # Berry naming scheme
 # (http://www.tex.ac.uk/cgi-bin/texfaq2html?label=fontname)
@@ -82,12 +84,15 @@ install: fontinst fcrpfb
 	mkdir -p $(DESTDIR)$(TEXMF_TL)/fonts/tfm/public/courier-extra \
 	         $(DESTDIR)$(TEXMF_TL)/fonts/vf/public/courier-extra \
 	         $(DESTDIR)$(TEXMF_TL)/fonts/type1/public/courier-extra \
-	         $(DESTDIR)/etc/texmf/dvipdfm \
 	         $(DESTDIR)$(TEXMF_TL)/tex/latex/courier-extra
 	cp -r *.tfm $(DESTDIR)$(TEXMF_TL)/fonts/tfm/public/courier-extra
 	cp -r *.vf  $(DESTDIR)$(TEXMF_TL)/fonts/vf/public/courier-extra
 	cp -r fcr*.pfb $(DESTDIR)$(TEXMF_TL)/fonts/type1/public/courier-extra
-	cp -r *.map $(DESTDIR)/etc/texmf/dvipdfm
+	for d in $(MAPDIRS); do \
+	  if [ -d $$d ]; then \
+	    cp *.map $$d; \
+	  fi; \
+	done
 	cp -r *.fd  $(DESTDIR)$(TEXMF_TL)/tex/latex/courier-extra
 	cp -r *.sty $(DESTDIR)$(TEXMF_TL)/tex/latex/courier-extra
 	mkdir -p $(DESTDIR)$(TEXMF)/fonts/tfm/public/courier-extra \
