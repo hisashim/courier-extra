@@ -73,7 +73,7 @@ DEBORIG = $(PACKAGE)_$(VERSION).orig.tar.gz
 
 all: fontinst fcrpfb
 
-.PHONY: all install fontinst fcrpfb test search \
+.PHONY: all install uninstall fontinst fcrpfb test search \
 	dist deb pbuilder-build pbuilder-login pbuilder-test \
 	mostlyclean clean maintainer-clean
 .SECONDARY:
@@ -111,6 +111,21 @@ install: fontinst fcrpfb
 	        courier-extra); \
 	  cd -); \
 	fi
+
+uninstall:
+	rm -fr $(DESTDIR)$(TEXMF_TL)/fonts/tfm/public/courier-extra \
+	       $(DESTDIR)$(TEXMF_TL)/fonts/vf/public/courier-extra \
+	       $(DESTDIR)$(TEXMF_TL)/fonts/type1/public/courier-extra \
+	       $(DESTDIR)$(TEXMF_TL)/tex/latex/courier-extra
+	for d in $(MAPDIRS); do \
+	  if [ -d $(DESTDIR)$$d ]; then \
+	    rm -f $(DESTDIR)$$d/$(PRODUCT)*.map; \
+	  fi; \
+	done
+	rm -fr $(DESTDIR)$(TEXMF)/fonts/tfm/public/courier-extra \
+	       $(DESTDIR)$(TEXMF)/fonts/vf/public/courier-extra \
+	       $(DESTDIR)$(TEXMF)/fonts/type1/public/courier-extra \
+	       $(DESTDIR)$(TEXMF)/tex/latex/courier-extra
 
 # generation
 
