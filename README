@@ -1,8 +1,8 @@
-vfdata-courier-extra for Debian
--------------------------------
+courier-extra
+-------------
 
-This is a Debianized version of courier-extra, a set of virtual font files
-to use Courier with extra series and shapes in LaTeX.
+courier-extra is a set of virtual font files to use Courier with extra
+series and shapes in LaTeX.
 
 Features
 --------
@@ -15,14 +15,19 @@ Features
     - extra series: condensed (narrow) (85%)
     - extra shapes: slant (oblique) and small caps
 
+Requirements
+------------
+
+  * Adobe Courier (pcr*.afm, pcr*.pfb)
+  * Adobe Symbol (psy*.afm)
+  * t1utils (t1disasm, t1asm)
+  * patchutils (patch)
+
 Installation
 ------------
 
-  $ sudo dpkg -i vfdata-courier-extra*.deb
-
-Configuration
--------------
-
+  $ make
+  $ sudo make install
   $ sudo mktexlsr
 
 Testing

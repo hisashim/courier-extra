@@ -56,7 +56,7 @@ TESTDOC = nfssfont
 TESTPDFS= $(foreach f,$(FONTS),$(f)-$(LABEL).pdf)
 TESTNAME= bigtest
 
-DIST    = Makefile VERSION ChangeLog devutils/ \
+DIST    = Makefile VERSION README ChangeLog devutils/ \
           courier-extra-driver.tex courier-extra-map.tex \
           courier-extra.sty courier-extra-test.tex \
           courier-extra.map courier-extra-fcr.map \
@@ -111,6 +111,9 @@ install: fontinst fcrpfb
 	        courier-extra); \
 	  cd -); \
 	fi
+	if [ -d $(DESTDIR)/usr/share/doc ]; then \
+	  cp README ChangeLog $(DESTDIR)/usr/share/doc/${PRODUCT}; \
+	fi
 
 uninstall:
 	rm -fr $(DESTDIR)$(TEXMF_TL)/fonts/tfm/public/courier-extra \
@@ -126,6 +129,8 @@ uninstall:
 	       $(DESTDIR)$(TEXMF)/fonts/vf/public/courier-extra \
 	       $(DESTDIR)$(TEXMF)/fonts/type1/public/courier-extra \
 	       $(DESTDIR)$(TEXMF)/tex/latex/courier-extra
+	rm -f $(DESTDIR)/usr/share/doc/$(PRODUCT)/README \
+	      $(DESTDIR)/usr/share/doc/$(PRODUCT)/ChangeLog
 
 # generation
 
