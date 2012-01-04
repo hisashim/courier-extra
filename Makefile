@@ -95,19 +95,22 @@ install: fontinst fcrpfb
 	done
 	cp -r *.fd  $(DESTDIR)$(TEXMF_TL)/tex/latex/courier-extra
 	cp -r *.sty $(DESTDIR)$(TEXMF_TL)/tex/latex/courier-extra
-	mkdir -p $(DESTDIR)$(TEXMF)/fonts/tfm/public/courier-extra \
-	         $(DESTDIR)$(TEXMF)/fonts/vf/public/courier-extra \
-	         $(DESTDIR)$(TEXMF)/fonts/type1/public/courier-extra \
-	         $(DESTDIR)$(TEXMF)/tex/latex/courier-extra
-	(cd $(DESTDIR)$(TEXMF) && \
-	ln -s       $(DESTDIR)$(TEXMF_TL)/fonts/tfm/public/courier-extra \
-	            fonts/tfm/public/courier-extra ; \
-	ln -s       $(DESTDIR)$(TEXMF_TL)/fonts/vf/public/courier-extra \
-	            fonts/vf/public/courier-extra ; \
-	ln -s       $(DESTDIR)$(TEXMF_TL)/fonts/type1/public/courier-extra \
-	            fonts/type1/public/courier-extra ; \
-	ln -s       $(DESTDIR)$(TEXMF_TL)/tex/latex/courier-extra \
-	            tex/latex/courier-extra ; cd -)
+	if [ -d $(DESTDIR)$(TEXMF) ]; then \
+	  (cd $(DESTDIR)$(TEXMF) && \
+	  (mkdir -p fonts/tfm/public; cd fonts/tfm/public; \
+	  ln -s ../../../../texmf-texlive/fonts/tfm/public/courier-extra \
+	        courier-extra); \
+	  (mkdir -p fonts/vf/public; cd fonts/vf/public; \
+	  ln -s ../../../../texmf-texlive/fonts/vf/public/courier-extra \
+	        courier-extra); \
+	  (mkdir -p fonts/type1/public; cd fonts/type1/public; \
+	  ln -s ../../../../texmf-texlive/fonts/type1/public/courier-extra \
+	        courier-extra); \
+	  (mkdir -p tex/latex; cd tex/latex; \
+	  ln -s ../../../texmf-texlive/tex/latex/courier-extra \
+	        courier-extra); \
+	  cd -); \
+	fi
 
 # generation
 
