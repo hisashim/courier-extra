@@ -56,7 +56,7 @@ TESTDOC = nfssfont
 TESTPDFS= $(foreach f,$(FONTS),$(f)-$(LABEL).pdf)
 TESTNAME= bigtest
 
-DIST    = Makefile VERSION ChangeLog dev/ \
+DIST    = Makefile VERSION ChangeLog devutils/ \
           courier-extra-driver.tex courier-extra-map.tex \
           courier-extra.sty courier-extra-test.tex \
           courier-extra.map courier-extra-fcr.map \
@@ -218,7 +218,7 @@ $(RELEASE): $(DIST)
 	($(TAR_XVCS) -cf - $(DIST)) | (cd $@ && tar xpf -)
 
 ChangeLog:
-	dev/changelog.sh > $@
+	devutils/vcslog.sh > $@
 
 %.tar.gz: %
 	tar cfz $@ $<
