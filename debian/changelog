@@ -1,3 +1,9 @@
+vfdata-courier-extra (0.1.2-0+0hisashim1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Hisashi Morita <hisashim@workbook.org>  Tue, 3 Jan 2012 21:49:46 +0900
+
 vfdata-courier-extra (0.1.1-0+0hisashim2) unstable; urgency=low
 
   * New upstream release.
