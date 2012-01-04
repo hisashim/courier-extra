@@ -1,4 +1,5 @@
 etc/texmf/dvipdfm
+etc/texmf/dvipdfmx
 usr/share/doc/vfdata-courier-extra
 usr/share/texmf-texlive/fonts/vf/public/courier-extra
 usr/share/texmf-texlive/fonts/tfm/public/courier-extra
