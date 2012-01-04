@@ -1,4 +1,4 @@
-#!/usr/bin/make
+#!/usr/bin/make -f
 
 ## variables
 
@@ -6,7 +6,7 @@
 
 PRODUCT = courier-extra
 VERSION = $(shell cat VERSION)
-PACKAGE = vfdata-courier-extra
+PACKAGE = $(shell head -n 1 debian/changelog | cut -d' ' -f 1)
 DEBREV  = $(shell head -n 1 debian/changelog \
                   | cut -d' ' -f 2 | sed 's/(\(.*\)-\(.*\))/\2/')
 
@@ -24,7 +24,7 @@ else
   LABEL         = $(TESTNAME)-$(MAP)
 endif
 TAR_XVCS= tar --exclude=".svn" --exclude=".git" --exclude=".hg"
-DEBBUILDOPTS=
+DEBUILDOPTS=
 PBUILDER = cowbuilder
 PBOPTS   = --hookdir=pbuilder-hooks \
            --bindmounts "/var/cache/pbuilder/result"
@@ -75,7 +75,7 @@ all: fontinst fcrpfb
 
 .PHONY: all install fontinst fcrpfb test search \
 	dist deb pbuilder-build pbuilder-login pbuilder-test \
-	mostlyclean clean distclean
+	mostlyclean clean maintainer-clean
 .SECONDARY:
 
 # installation
@@ -242,7 +242,7 @@ pbuilder-test: $(DEB)_all.deb
 
 $(DEB).dsc: $(RELEASE) $(DEBORIG)
 	($(TAR_XVCS) -cf - debian) | (cd $(RELEASE) && tar xpf -)
-	(cd $(RELEASE) && debuild $(DEBBUILDOPTS); cd -)
+	(cd $(RELEASE) && debuild $(DEBUILDOPTS); cd -)
 
 $(DEBORIG): $(RELEASE).tar.gz
 	cp $< $@
@@ -265,5 +265,5 @@ clean: mostlyclean
 	rm -f $(RELEASE).tar.gz
 	rm -f $(DEB).dsc $(DEBORIG) $(DEB).diff.gz $(DEB)_*.deb
 
-distclean: clean
+maintainer-clean: clean
 	rm -f ChangeLog
