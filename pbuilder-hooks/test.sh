@@ -41,37 +41,27 @@ update-texmf
 
 echo "### Copying source package..."
 cp -v /var/cache/pbuilder/result/${DEB}.dsc ./
-cp -v /var/cache/pbuilder/result/${PACKAGE}_${VERSION}*.tar.gz ./
+cp -v /var/cache/pbuilder/result/${PACKAGE}_${VERSION}.orig.tar.gz ./
 cp -v /var/cache/pbuilder/result/${DEB}_*.changes ./
 echo "### Extracting source package..."
-tar fxz ${PACKAGE}_${VERSION}*.tar.gz
+tar xfz ${PACKAGE}_${VERSION}.orig.tar.gz
 echo "### Processing test documents..."
-cd ${PACKAGE}-${VERSION}
+cd ${PACKAGE}_${VERSION}.orig
 apt-get install t1utils
 make test
-make clean
+make mostlyclean
 make test MAP=
-make clean
+make mostlyclean
 make test MAP=courier-extra-pcr
-make clean
+make mostlyclean
 make test MAP=courier-extra-ucr
-make clean
+make mostlyclean
 make test MAP=courier-extra-fcr
-make clean
+make mostlyclean
 echo "### Copying test result to /var/cache/pbuilder/result..."
-cp -v pcr*.pdf /var/cache/pbuilder/result
-echo "### Cleaning up..."
-rm -v pcr*.tex pcr*.aux pcr*.log pcr*.dvi pcr*.pdf
+tar cfz ${DEB}-test.tar.gz pcr*.pdf courier-extra-test.pdf
+cp -v ${DEB}-test.tar.gz /var/cache/pbuilder/result
 cd -
-echo "### Copying test document..."
-cp -v /usr/share/doc/${PACKAGE}/examples/courier-extra-test.tex ./${DEB}-test.tex
-echo "### Processing test document..."
-latex ${DEB}-test.tex
-dvipdfmx -f courier-extra.map ./${DEB}-test.dvi
-echo "### Copying test result to /var/cache/pbuilder/result..."
-cp -v ${DEB}-test.* /var/cache/pbuilder/result
-echo "### Cleaning up..."
-rm -v ${DEB}-test.*
 echo "### Testing uninstallation..."
 dpkg --remove ${PACKAGE}
 dpkg --install /var/cache/pbuilder/result/${DEB}_all.deb
