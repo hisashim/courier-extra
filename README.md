@@ -1,5 +1,5 @@
 courier-extra
--------------
+=============
 
 courier-extra is a set of virtual font files to use Courier with extra
 series and shapes in LaTeX.
@@ -26,26 +26,27 @@ Requirements
 Installation
 ------------
 
-  $ make
-  $ sudo make install
-  $ sudo mktexlsr
+    $ make
+    $ sudo make install
+    $ sudo mktexlsr
 
 Testing
 -------
 
-  $ cp /usr/share/doc/vfdata-courier-extra/examples/courier-extra-test.tex ./
-  $ latex courier-extra-test.tex
-  $ dvipdfmx -f courier-extra.map -o courier-extra-test.pdf courier-extra-test.dvi
-  $ dvipdfmx -f courier-extra-ucr.map -o courier-extra-test-ucr.pdf courier-extra-test.dvi
-  $ dvipdfmx -f courier-extra-pcr.map -o courier-extra-test-pcr.pdf courier-extra-test.dvi
-  $ dvipdfmx -f courier-extra-fcr.map -o courier-extra-test-fcr.pdf courier-extra-test.dvi
-  $ xpdf courier-extra-test.pdf &
-  $ rm courier-extra-test-*.{tex,aux,log,dvi,pdf}
+    $ cp /usr/share/doc/vfdata-courier-extra/examples/courier-extra-test.tex ./
+    $ latex courier-extra-test.tex
+    $ dvipdfmx -f courier-extra.map -o courier-extra-test.pdf courier-extra-test.dvi
+    $ dvipdfmx -f courier-extra-ucr.map -o courier-extra-test-ucr.pdf courier-extra-test.dvi
+    $ dvipdfmx -f courier-extra-pcr.map -o courier-extra-test-pcr.pdf courier-extra-test.dvi
+    $ dvipdfmx -f courier-extra-fcr.map -o courier-extra-test-fcr.pdf courier-extra-test.dvi
+    $ xpdf courier-extra-test.pdf &
+    $ rm courier-extra-test-*.{tex,aux,log,dvi,pdf}
 
 Usage
 -----
 
-  $ $EDITOR foo.tex
+    $ $EDITOR foo.tex
+    cat foo.tex
     \documentclass{article}
     \usepackage{courier-extra}% \\ttdefault is set to pcre
     \begin{document}
@@ -59,9 +60,9 @@ Usage
     \slshape\selectfont         slant            \\
     \scshape\selectfont         smallcaps
     \end{document}
-  $ latex foo.tex
-  $ dvipdfmx -f courier-extra.map -o foo.pdf foo.dvi
-  $ dvipdfmx -f courier-extra-fcr.map -o foo-fcr.pdf foo.dvi
+    $ latex foo.tex
+    $ dvipdfmx -f courier-extra.map -o foo.pdf foo.dvi
+    $ dvipdfmx -f courier-extra-fcr.map -o foo-fcr.pdf foo.dvi
 
 Font Maps
 ---------
@@ -94,10 +95,10 @@ Known Problems:
     and shapes. Otherwise, extra series and shapes may not print
     correctly. Possible workaround is like:
 
-      {\\ttfamily
-       \fontseries{m}\selectfont  medium
-       \fontseries{mc}\selectfont medium condensed
-       \fontseries{bc}\selectfont bold condensed}
-      ...
+        {\\ttfamily
+         \fontseries{m}\selectfont  medium
+         \fontseries{mc}\selectfont medium condensed
+         \fontseries{bc}\selectfont bold condensed}
+        ...
 
     Any advise to fix it is highly appreciated.
