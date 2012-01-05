@@ -6,8 +6,10 @@
 
 PRODUCT = courier-extra
 VERSION = $(shell cat VERSION)
-PACKAGE = $(shell head -n 1 debian/changelog | cut -d' ' -f 1)
-DEBREV  = $(shell head -n 1 debian/changelog \
+PACKAGE = $(shell [ -f debian/changelog ] && \
+                  head -n 1 debian/changelog | cut -d' ' -f 1)
+DEBREV  = $(shell [ -f debian/changelog ] && \
+                  head -n 1 debian/changelog \
                   | cut -d' ' -f 2 | sed 's/(\(.*\)-\(.*\))/\2/')
 
 # programs
@@ -67,7 +69,7 @@ DIST    = Makefile VERSION README.md ChangeLog devutils/ \
 RELEASE = $(PRODUCT)-$(VERSION)
 
 DEB     = $(PACKAGE)_$(VERSION)-$(DEBREV)
-DEBORIG = $(PACKAGE)_$(VERSION).orig.tar.gz
+DEBORIG = $(PACKAGE)_$(VERSION).orig
 
 ## targets
 
@@ -112,7 +114,8 @@ install: fontinst fcrpfb
 	  cd -); \
 	fi
 	if [ -d $(DESTDIR)/usr/share/doc ]; then \
-	  cp README.md ChangeLog $(DESTDIR)/usr/share/doc/${PRODUCT}; \
+	  mkdir -p $(DESTDIR)/usr/share/doc/$(PRODUCT); \
+	  cp README.md ChangeLog $(DESTDIR)/usr/share/doc/$(PRODUCT); \
 	fi
 
 uninstall:
@@ -129,8 +132,7 @@ uninstall:
 	       $(DESTDIR)$(TEXMF)/fonts/vf/public/courier-extra \
 	       $(DESTDIR)$(TEXMF)/fonts/type1/public/courier-extra \
 	       $(DESTDIR)$(TEXMF)/tex/latex/courier-extra
-	rm -f $(DESTDIR)/usr/share/doc/$(PRODUCT)/README.md \
-	      $(DESTDIR)/usr/share/doc/$(PRODUCT)/ChangeLog
+	rm -fr $(DESTDIR)/usr/share/doc/$(PRODUCT)
 
 # generation
 
@@ -195,9 +197,9 @@ test: fcrpfb $(TESTPDFS) courier-extra-test.pdf
 
 %-testfont.tex: $(TEXMF_TL)/tex/plain/base/testfont.tex
 	@sed 's/\(\\ifx\\noinit!\\else\\init\\fi\)/%% overwriting init\n% \1/' < $< > $@
-	@echo '\def\init{\def\fontname{$(*)}\startfont' >> $@
-	@echo '  \$(TESTNAME)}' >> $@
-	@echo '\init\bye' >> $@
+	@/bin/echo '\def\init{\def\fontname{$(*)}\startfont' >> $@
+	@/bin/echo '  \$(TESTNAME)}' >> $@
+	@/bin/echo '\init\bye' >> $@
 	# -diff -u $< $@
 
 %-nfssfont.tex: $(TEXMF_TL)/tex/latex/base/nfssfont.tex
@@ -207,9 +209,9 @@ test: fcrpfb $(TESTPDFS) courier-extra-test.pdf
 	| sed 's/\(   {Input external font name, e.g., cmr10^^J%\)/% \1/' \
 	| sed 's/\(    (or <enter> for NFSS classification of font):}%\)/% \1/' \
 	> $@
-	@echo '\def\currfontname{$(*)}' >> $@
-	@echo '\init\$(TESTNAME)\bye' >> $@
-	@echo '\endinput' >> $@
+	@/bin/echo '\def\currfontname{$(*)}' >> $@
+	@/bin/echo '\init\$(TESTNAME)\bye' >> $@
+	@/bin/echo '\endinput' >> $@
 	# -diff -u $< $@
 
 %-fontchart.tex: $(TEXMF_TL)/tex/plain/base/fontchart.tex
@@ -263,12 +265,12 @@ pbuilder-test: $(DEB)_all.deb
 	sudo $(PBUILDER) --execute $(PBOPTS) -- pbuilder-hooks/test.sh \
 	$(PACKAGE) $(VERSION) $(DEBREV)
 
-$(DEB).dsc: $(RELEASE) $(DEBORIG)
+$(DEB).dsc: $(RELEASE) $(DEBORIG).tar.gz
 	($(TAR_XVCS) -cf - debian) | (cd $(RELEASE) && tar xpf -)
 	(cd $(RELEASE) && debuild $(DEBUILDOPTS); cd -)
 
-$(DEBORIG): $(RELEASE).tar.gz
-	cp $< $@
+$(DEBORIG): $(RELEASE)
+	cp -a $< $@
 
 # utilities
 
@@ -276,7 +278,7 @@ mostlyclean:
 	rm -f *.fd *.vpl *.mtx *.pl *.log *.aux *.dvi *.t1asm *.t1
 	rm -f *-$(TESTDOC).*
 	rm -f pcr*.pfb
-	rm -fr $(RELEASE)
+	rm -fr $(RELEASE) $(DEBORIG)
 	rm -f $(DEB)_*.build $(DEB)_*.changes
 	rm -fr debian/$(PRODUCT)
 
@@ -286,7 +288,7 @@ clean: mostlyclean
 	rm -f courier-extra-dvips.map
 	rm -f courier-extra-rec.tex
 	rm -f $(RELEASE).tar.gz
-	rm -f $(DEB).dsc $(DEBORIG) $(DEB).diff.gz $(DEB)_*.deb
+	rm -f $(DEB).dsc $(DEBORIG).tar.gz $(DEB).diff.gz $(DEB)_*.deb
 
 maintainer-clean: clean
 	rm -f ChangeLog
