@@ -46,7 +46,7 @@ cp -v /var/cache/pbuilder/result/${DEB}_*.changes ./
 echo "### Extracting source package..."
 tar xfz ${PACKAGE}_${VERSION}.orig.tar.gz
 echo "### Processing test documents..."
-cd ${PACKAGE}_${VERSION}.orig
+cd courier-extra-${VERSION}
 apt-get install t1utils
 make test
 make mostlyclean

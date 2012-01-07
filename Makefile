@@ -73,10 +73,10 @@ DEBORIG = $(PACKAGE)_$(VERSION).orig
 
 ## targets
 
-all: fontinst fcrpfb
+all: $(DIST) fontinst fcrpfb
 
 .PHONY: all install uninstall fontinst fcrpfb test search \
-	dist deb pbuilder-build pbuilder-login pbuilder-test \
+	dist deb pbuilder-build pbuilder-login pbuilder-test debuild debuild-clean \
 	mostlyclean clean maintainer-clean
 .SECONDARY:
 
@@ -250,10 +250,11 @@ ChangeLog:
 
 # debian package
 
-deb: $(DEB)_all.deb
-
-$(DEB)_all.deb: pbuilder-build
-	cp /var/cache/pbuilder/result/$@ ./
+deb: pbuilder-build
+	cp /var/cache/pbuilder/result/$(DEB).diff.gz ./
+	cp /var/cache/pbuilder/result/$(DEB).dsc ./
+	cp /var/cache/pbuilder/result/$(DEB)_all.deb ./
+	cp /var/cache/pbuilder/result/$(DEBORIG).tar.gz ./
 
 pbuilder-build: $(DEB).dsc
 	sudo $(PBUILDER) --build $< -- $(PBOPTS)
@@ -264,13 +265,22 @@ pbuilder-login:
 pbuilder-test: $(DEB)_all.deb
 	sudo $(PBUILDER) --execute $(PBOPTS) -- pbuilder-hooks/test.sh \
 	$(PACKAGE) $(VERSION) $(DEBREV)
+	cp /var/cache/pbuilder/result/$(DEB)-test.tar.gz ./
 
-$(DEB).dsc: $(RELEASE) $(DEBORIG).tar.gz
+$(DEB).dsc: debuild
+
+debuild: $(RELEASE) $(DEBORIG).tar.gz
 	($(TAR_XVCS) -cf - debian) | (cd $(RELEASE) && tar xpf -)
 	(cd $(RELEASE) && debuild $(DEBUILDOPTS); cd -)
 
-$(DEBORIG): $(RELEASE)
+$(DEBORIG).tar.gz: $(RELEASE).tar.gz
 	cp -a $< $@
+
+debuild-clean:
+	rm -fr $(DEBORIG)
+	rm -f $(DEB)_*.build $(DEB)_*.changes
+	rm -fr debian/$(PRODUCT)
+	rm -f $(DEB).dsc $(DEBORIG).tar.gz $(DEB).diff.gz $(DEB)_*.deb
 
 # utilities
 
@@ -278,9 +288,7 @@ mostlyclean:
 	rm -f *.fd *.vpl *.mtx *.pl *.log *.aux *.dvi *.t1asm *.t1
 	rm -f *-$(TESTDOC).*
 	rm -f pcr*.pfb
-	rm -fr $(RELEASE) $(DEBORIG)
-	rm -f $(DEB)_*.build $(DEB)_*.changes
-	rm -fr debian/$(PRODUCT)
+	rm -fr $(RELEASE)
 
 clean: mostlyclean
 	rm -f *.afm *.vf *.tfm *.pdf *.pfb
@@ -288,7 +296,6 @@ clean: mostlyclean
 	rm -f courier-extra-dvips.map
 	rm -f courier-extra-rec.tex
 	rm -f $(RELEASE).tar.gz
-	rm -f $(DEB).dsc $(DEBORIG).tar.gz $(DEB).diff.gz $(DEB)_*.deb
 
-maintainer-clean: clean
+maintainer-clean: clean debuild-clean
 	rm -f ChangeLog
