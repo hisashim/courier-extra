@@ -34,10 +34,10 @@ PBOPTS   = --hookdir=pbuilder-hooks \
 # files and directories
 
 DESTDIR =
-TEXMF   = /usr/share/texmf
-TEXMF_TL= /usr/share/texmf-texlive
-MAPDIRS = /etc/texmf/dvipdfm \
-          /etc/texmf/dvipdfmx
+TEXMFROOT = /usr/share/texlive
+TEXMFDIST_OLD = /usr/share/texmf-texlive
+TEXMFDIST = $(firstword $(wildcard $(TEXMFROOT)/texmf-dist $(TEXMFDIST_OLD)))
+MAPDIRS = $(TEXMFDIST)/fonts/map/dvipdfmx
 
 # Berry naming scheme
 # (http://www.tex.ac.uk/cgi-bin/texfaq2html?label=fontname)
@@ -83,62 +83,41 @@ all: $(DIST) fontinst fcrpfb
 # installation
 
 install: fontinst fcrpfb
-	mkdir -p $(DESTDIR)$(TEXMF_TL)/fonts/tfm/public/courier-extra \
-	         $(DESTDIR)$(TEXMF_TL)/fonts/vf/public/courier-extra \
-	         $(DESTDIR)$(TEXMF_TL)/fonts/type1/public/courier-extra \
-	         $(DESTDIR)$(TEXMF_TL)/tex/latex/courier-extra
-	cp -r *.tfm $(DESTDIR)$(TEXMF_TL)/fonts/tfm/public/courier-extra
-	cp -r *.vf  $(DESTDIR)$(TEXMF_TL)/fonts/vf/public/courier-extra
-	cp -r fcr*.pfb $(DESTDIR)$(TEXMF_TL)/fonts/type1/public/courier-extra
+	mkdir -p $(DESTDIR)$(TEXMFDIST)/fonts/tfm/public/courier-extra \
+	         $(DESTDIR)$(TEXMFDIST)/fonts/vf/public/courier-extra \
+	         $(DESTDIR)$(TEXMFDIST)/fonts/type1/public/courier-extra \
+	         $(DESTDIR)$(TEXMFDIST)/tex/latex/courier-extra
+	cp -r *.tfm $(DESTDIR)$(TEXMFDIST)/fonts/tfm/public/courier-extra
+	cp -r *.vf  $(DESTDIR)$(TEXMFDIST)/fonts/vf/public/courier-extra
+	cp -r fcr*.pfb $(DESTDIR)$(TEXMFDIST)/fonts/type1/public/courier-extra
 	for d in $(MAPDIRS); do \
-	  if [ -d $(DESTDIR)$$d ]; then \
-	    cp *.map $(DESTDIR)$$d; \
-	  fi; \
+	  mkdir -p $(DESTDIR)$$d; \
+	  cp *.map $(DESTDIR)$$d; \
 	done
-	cp -r *.fd  $(DESTDIR)$(TEXMF_TL)/tex/latex/courier-extra
-	cp -r *.sty $(DESTDIR)$(TEXMF_TL)/tex/latex/courier-extra
-	if [ -d $(DESTDIR)$(TEXMF) ]; then \
-	  (cd $(DESTDIR)$(TEXMF) && \
-	  (mkdir -p fonts/tfm/public; cd fonts/tfm/public; \
-	  ln -s ../../../../texmf-texlive/fonts/tfm/public/courier-extra \
-	        courier-extra); \
-	  (mkdir -p fonts/vf/public; cd fonts/vf/public; \
-	  ln -s ../../../../texmf-texlive/fonts/vf/public/courier-extra \
-	        courier-extra); \
-	  (mkdir -p fonts/type1/public; cd fonts/type1/public; \
-	  ln -s ../../../../texmf-texlive/fonts/type1/public/courier-extra \
-	        courier-extra); \
-	  (mkdir -p tex/latex; cd tex/latex; \
-	  ln -s ../../../texmf-texlive/tex/latex/courier-extra \
-	        courier-extra); \
-	  cd -); \
-	fi
+	cp -r *.fd  $(DESTDIR)$(TEXMFDIST)/tex/latex/courier-extra
+	cp -r *.sty $(DESTDIR)$(TEXMFDIST)/tex/latex/courier-extra
 	if [ -d $(DESTDIR)/usr/share/doc ]; then \
 	  mkdir -p $(DESTDIR)/usr/share/doc/$(PRODUCT); \
 	  cp README.md ChangeLog $(DESTDIR)/usr/share/doc/$(PRODUCT); \
 	fi
 
 uninstall:
-	rm -fr $(DESTDIR)$(TEXMF_TL)/fonts/tfm/public/courier-extra \
-	       $(DESTDIR)$(TEXMF_TL)/fonts/vf/public/courier-extra \
-	       $(DESTDIR)$(TEXMF_TL)/fonts/type1/public/courier-extra \
-	       $(DESTDIR)$(TEXMF_TL)/tex/latex/courier-extra
+	rm -fr $(DESTDIR)$(TEXMFDIST)/fonts/tfm/public/courier-extra \
+	       $(DESTDIR)$(TEXMFDIST)/fonts/vf/public/courier-extra \
+	       $(DESTDIR)$(TEXMFDIST)/fonts/type1/public/courier-extra \
+	       $(DESTDIR)$(TEXMFDIST)/tex/latex/courier-extra
 	for d in $(MAPDIRS); do \
 	  if [ -d $(DESTDIR)$$d ]; then \
 	    rm -f $(DESTDIR)$$d/$(PRODUCT)*.map; \
 	  fi; \
 	done
-	rm -fr $(DESTDIR)$(TEXMF)/fonts/tfm/public/courier-extra \
-	       $(DESTDIR)$(TEXMF)/fonts/vf/public/courier-extra \
-	       $(DESTDIR)$(TEXMF)/fonts/type1/public/courier-extra \
-	       $(DESTDIR)$(TEXMF)/tex/latex/courier-extra
 	rm -fr $(DESTDIR)/usr/share/doc/$(PRODUCT)
 
 # generation
 
 fontinst: courier-extra-driver.tex
-	cp -r $(TEXMF_TL)/fonts/afm/adobe/courier/*.afm ./
-	cp -r $(TEXMF_TL)/fonts/afm/adobe/symbol/*.afm ./
+	cp -r $(TEXMFDIST)/fonts/afm/adobe/courier/*.afm ./
+	cp -r $(TEXMFDIST)/fonts/afm/adobe/symbol/*.afm ./
 	$(TEX) $<
 	$(TEX) courier-extra-map.tex
 	rm -f *.afm
@@ -167,16 +146,16 @@ fcr%.t1asm: pcr%.t1asm fcr%.t1asm.patch
 %.t1asm: %.pfb
 	t1disasm --output $@ $<
 
-pcr%.afm: $(TEXMF_TL)/fonts/afm/adobe/courier/pcr%.afm
+pcr%.afm: $(TEXMFDIST)/fonts/afm/adobe/courier/pcr%.afm
 	cp $< $@
 
-pcr%.pfb: $(TEXMF_TL)/fonts/type1/adobe/courier/pcr%.pfb
+pcr%.pfb: $(TEXMFDIST)/fonts/type1/adobe/courier/pcr%.pfb
 	cp $< $@
 
-ucr%.afm: $(TEXMF_TL)/fonts/afm/urw/courier/ucr%.afm
+ucr%.afm: $(TEXMFDIST)/fonts/afm/urw/courier/ucr%.afm
 	cp $< $@
 
-ucr%.pfb: $(TEXMF_TL)/fonts/type1/urw/courier/ucr%.pfb
+ucr%.pfb: $(TEXMFDIST)/fonts/type1/urw/courier/ucr%.pfb
 	cp $< $@
 
 # testing
@@ -195,14 +174,14 @@ test: fcrpfb $(TESTPDFS) courier-extra-test.pdf
 %-fontchart.dvi: %-fontchart.tex
 	$(TEX) $<
 
-%-testfont.tex: $(TEXMF_TL)/tex/plain/base/testfont.tex
+%-testfont.tex: $(TEXMFDIST)/tex/plain/base/testfont.tex
 	@sed 's/\(\\ifx\\noinit!\\else\\init\\fi\)/%% overwriting init\n% \1/' < $< > $@
 	@/bin/echo '\def\init{\def\fontname{$(*)}\startfont' >> $@
 	@/bin/echo '  \$(TESTNAME)}' >> $@
 	@/bin/echo '\init\bye' >> $@
 	# -diff -u $< $@
 
-%-nfssfont.tex: $(TEXMF_TL)/tex/latex/base/nfssfont.tex
+%-nfssfont.tex: $(TEXMFDIST)/tex/latex/base/nfssfont.tex
 	@sed 's/\(\\ifx\\noinit!\\else\\init\\fi\)/%% overwriting init\n% \1/' < $< \
 	| sed 's/\(\\endinput\)/% \1/' \
 	| sed 's/\( \\typein\[\\currfontname\]%\)/% \1/' \
@@ -214,7 +193,7 @@ test: fcrpfb $(TESTPDFS) courier-extra-test.pdf
 	@/bin/echo '\endinput' >> $@
 	# -diff -u $< $@
 
-%-fontchart.tex: $(TEXMF_TL)/tex/plain/base/fontchart.tex
+%-fontchart.tex: $(TEXMFDIST)/tex/plain/base/fontchart.tex
 	@sed 's/\(\\read-1 to \\fontname\)/% \1\n\\def\\fontname{$(*)\\relax}/'< $< \
 	> $@
 	# -diff -u $< $@
